@@ -27,3 +27,5 @@ def preprocess_text(text):
   tokenized = word_tokenize(cleaned)
   normalized = " ".join([normalizer.lemmatize(token, get_part_of_speech(token)) for token in tokenized])
   return normalized
+
+print(preprocess_text(messages_dict["Rohan Kadambi"][0:10]))

@@ -4,27 +4,24 @@
 
 
 # import sklearn modules here:
+# from preprocessing import preprocess_text
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from extract_messages import messages_dict
+
+rohan = "Rohan Kadambi"
+mike = "Zeran Ji"
+thomas = "Thomas Malchodi"
+jeremy = "Jeremy Thaller"
 
 # Setting up the combined list of friends' writing samples
-friends_docs = goldman_docs + henson_docs + wu_docs
+friends_docs = messages_dict[rohan]+ messages_dict[mike] + messages_dict[thomas] + messages_dict[jeremy]
 # Setting up labels for your three friends
-friends_labels = [1] * 154 + [2] * 141 + [3] * 166
-
-# Print out a document from each friend:
-print(goldman_docs[0])
+friends_labels = [1]*(len(messages_dict[rohan])) + [2]*(len(messages_dict[mike])) + [3]*(len(messages_dict[thomas])) + [4]*(len(messages_dict[jeremy]))
 
 
-
-mystery_postcard = """
-My friend,
-From the 10th of July to the 13th, a fierce storm raged, clouds of
-freeing spray broke over the ship, incasing her in a coat of icy mail,
-and the tempest forced all of the ice out of the lower end of the
-channel and beyond as far as the eye could see, but the _Roosevelt_
-still remained surrounded by ice.
-Hope to see you soon.
+mystery_message = """
+big boi manipulation lol
 """
 
 # Create bow_vectorizer:
@@ -32,7 +29,7 @@ bow_vectorizer = CountVectorizer()
 # Define friends_vectors:
 friends_vectors = bow_vectorizer.fit_transform(friends_docs)
 # Define mystery_vector:
-mystery_vector = bow_vectorizer.transform([mystery_postcard])
+mystery_vector = bow_vectorizer.transform([mystery_message])
 
 # Define friends_classifier:
 friends_classifier = MultinomialNB()
@@ -42,8 +39,16 @@ friends_classifier.fit(friends_vectors, friends_labels)
 
 # Change predictions:
 predictions = friends_classifier.predict(mystery_vector)
+if predictions == [1]:
+    predictions = rohan
+elif predictions == [2]:
+    predictions = mike
+elif predictions == [3]:
+    predictions = thomas_json1
+elif predictions == [4]:
+    predictions = jeremy
+print(f"prediction: message from {predictions}")
 
-mystery_friend = predictions[0] if predictions[0] else "someone else"
 
-# Uncomment the print statement:
-print("The postcard was from {}!".format(mystery_friend))
+# # Uncomment the print statement:
+# print("The postcard was from {}!".format(mystery_friend))
