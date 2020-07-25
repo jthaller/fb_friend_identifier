@@ -1,6 +1,6 @@
 #Jeremy Thaller May 6, 2020
 # Given an unseen message, the script predicts who sent the message.
-# I used personal fb chats as training data, and I used messages from group chats as testing data  
+# I used personal fb chats as training data, and I used messages from group chats as testing data
 # The only thing needed to be edited is the mystery_message string.
 
 #Import docs with messages in them
@@ -22,7 +22,8 @@ friends_docs = messages_dict[rohan]+ messages_dict[mike] + messages_dict[thomas]
 friends_labels = [1]*(len(messages_dict[rohan])) + [2]*(len(messages_dict[mike])) + [3]*(len(messages_dict[thomas])) + [4]*(len(messages_dict[jeremy]))
 
 #never before seen message for which the NN will predict the sender
-mystery_message = "big boi manipulation lol"
+# mystery_message = "big boi manipulation lol"
+mystery_message = '''lmao well since you're up, ill update and say i will never not buy anything off of amazon ever again literally found the same shoe for 40 dollars less than their sale?'''
 
 
 # Create bow_vectorizer:
@@ -50,6 +51,7 @@ elif predictions == [4]:
     predictions = jeremy
 print(f"Test message for prediction: \"{mystery_message}\"")
 print(f"Prediction: Message sent from {predictions}")
+
 
 
 # # Uncomment the print statement:

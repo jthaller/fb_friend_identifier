@@ -3,6 +3,8 @@
 ## This time I will scrape JSON files.
 
 import json
+import pickle
+
 
 jeremy = "Jeremy Thaller"
 mike = "Zeran Ji"
@@ -65,6 +67,17 @@ with open(thomas_json1, "r") as read_file:
     data = json.load(read_file)
     scrape_friend(jeremy, data)
     scrape_friend(thomas, data)
+
+
+#save it as a pickle
+with open('fb_messages.pickle', 'wb') as handle:
+    pickle.dump(messages_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+#double check it worked
+with open('fb_messages.pickle', 'rb') as handle:
+    b = pickle.load(handle)
+print(messages_dict == b)
+
 
 # print(f"Rohan: {messages_dict[rohan][-3:]}")
 # print(f"Thomas: {messages_dict[thomas][-3:]}")
