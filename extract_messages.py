@@ -8,18 +8,18 @@ import pickle
 
 jeremy = "Jeremy Thaller"
 mike = "Zeran Ji"
-mike_json1 = ".\messages_json\inbox\ZeranJi_XXnwiz4w7g\message_1.json"
-mike_json2 = "C:\\Users\\jerem\\Documents\\Python\\fb_friend_identifier\\messages_json\\inbox\\ZeranJi_XXnwiz4w7g\\message_2.json"
+mike_json1 = "./messages_json/inbox/ZeranJi_XXnwiz4w7g/message_1.json"
+mike_json2 = "./messages_json/inbox/ZeranJi_XXnwiz4w7g/message_2.json"
 
 rohan = "Rohan Kadambi"
-rohan_json1 = ".\messages_json\inbox\RohanKadambi_NQvgRgwgtQ\message_1.json"
-rohan_json2 = ".\messages_json\inbox\RohanKadambi_NQvgRgwgtQ\message_2.json"
-rohan_json3 = ".\messages_json\inbox\RohanKadambi_NQvgRgwgtQ\message_3.json"
+rohan_json1 = "./messages_json/inbox/RohanKadambi_NQvgRgwgtQ/message_1.json"
+rohan_json2 = "./messages_json/inbox/RohanKadambi_NQvgRgwgtQ/message_2.json"
+rohan_json3 = "./messages_json/inbox/RohanKadambi_NQvgRgwgtQ/message_3.json"
 #there is a message_4.json but I don't think it's a great idea to include messages from 9th grade.
 #oldest message in rohan_json3 is from Jan 4 2015
 
 thomas = "Thomas Malchodi"
-thomas_json1 = ".\messages_json\inbox\ThomasMalchodi_PFq8d7gKmg\message_1.json"
+thomas_json1 = "./messages_json/inbox/ThomasMalchodi_PFq8d7gKmg/message_1.json"
 
 true = True
 #Structure: dict{key=string friend: value: [array of strings]}
@@ -35,39 +35,53 @@ def scrape_friend(name, data):
         except KeyError:
             pass
 
+# this should probably be in preprocessing but it makes more sense to nest the call in the scraping
+# so I'm keeping this method in this script
+def fix_encoding_issues(obj):
+    for key in obj:
+        if isinstance(obj[key], str):
+            obj[key] = obj[key].replace('â\x80\x99', "\'") #needed to brute force convert these characters
+            obj[key] = obj[key].replace('\u00e2\u0080\u0099', "\'") #needed to brute force convert these characters
+            obj[key] = obj[key].encode('latin_1').decode('utf-8')
+            obj[key] = obj[key].replace('\n', '') #not sure why this was needed but it was
+        elif isinstance(obj[key], list):
+            obj[key] = list(map(lambda x: x if type(x) != str else x.encode('latin_1').decode('utf-8'), obj[key]))
+        pass
+    return obj
+
 
 #open file, scrape messages and add to messages_dict
 #mike
-with open(mike_json1, "r") as read_file:
-    data = json.load(read_file)
+with open(mike_json1) as read_file:
+    data = json.load(read_file, object_hook=fix_encoding_issues)
     scrape_friend(jeremy, data)
     scrape_friend(mike, data)
 
-with open(mike_json2, "r") as read_file:
-    data = json.load(read_file)
+with open(mike_json2) as read_file:
+    data = json.load(read_file, object_hook=fix_encoding_issues)
     scrape_friend(jeremy, data)
     scrape_friend(mike, data)
 #rohan
 with open(rohan_json1, "r") as read_file:
-    data = json.load(read_file)
+    data = json.load(read_file, object_hook=fix_encoding_issues)
     scrape_friend(jeremy, data)
     scrape_friend(rohan, data)
 
 with open(rohan_json2, "r") as read_file:
-    data = json.load(read_file)
+    data = json.load(read_file, object_hook=fix_encoding_issues)
     scrape_friend(jeremy, data)
     scrape_friend(rohan, data)
 
 with open(rohan_json3, "r") as read_file:
-    data = json.load(read_file)
+    data = json.load(read_file, object_hook=fix_encoding_issues)
     scrape_friend(jeremy, data)
     scrape_friend(rohan, data)
 #thomas
 with open(thomas_json1, "r") as read_file:
-    data = json.load(read_file)
+    # data = json.load(read_file)
+    data = json.load(read_file, object_hook=fix_encoding_issues)
     scrape_friend(jeremy, data)
     scrape_friend(thomas, data)
-
 
 #save it as a pickle
 with open('fb_messages.pickle', 'wb') as handle:
@@ -76,12 +90,13 @@ with open('fb_messages.pickle', 'wb') as handle:
 #double check it worked
 with open('fb_messages.pickle', 'rb') as handle:
     b = pickle.load(handle)
+    print(b)
 print(messages_dict == b)
 
 
-# print(f"Rohan: {messages_dict[rohan][-3:]}")
-# print(f"Thomas: {messages_dict[thomas][-3:]}")
-# print(f"Mike: {messages_dict[mike][-3:]}")
+# print(f"Rohan: {messages_dict[rohan][-50:]}")
+print(f"Thomas: {messages_dict[thomas][-50:]}")
+# print(f"Mike: {messages_dict[mike][-50:]}")
 # print(f"Jeremy: {messages_dict[jeremy][-3:]}")
 
 

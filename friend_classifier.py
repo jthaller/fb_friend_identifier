@@ -11,6 +11,10 @@ from extract_messages import messages_dict
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import validation_curve
+# tensorboard --logdir=summaries
+
 rohan = "Rohan Kadambi"
 mike = "Zeran Ji"
 thomas = "Thomas Malchodi"
@@ -27,20 +31,35 @@ mystery_message = '''lmao well since you're up, ill update and say i will never 
 
 
 # Create bow_vectorizer:
+# {key=word: val=frequency)
 bow_vectorizer = CountVectorizer()
 # Define friends_vectors:
 friends_vectors = bow_vectorizer.fit_transform(friends_docs)
+
+# train test split
+# X_train, X_test, y_train, y_test = train_test_split(friends_vectors, friends_labels, test_size=0.33, random_state=42)
+
+
 # Define mystery_vector:
 mystery_vector = bow_vectorizer.transform([mystery_message])
 
 # Define friends_classifier:
 friends_classifier = MultinomialNB()
 
+# plot training scores. default is with 5-fold cross validation
+train_scores, valid_scores = validation_curve(friends_classifier, X, y, "alpha", np.logspace(-7, 3, 3), cv=5)
+train_scores_mean = np.mean(train_scores, axis=1)
+train_scores_std = np.std(train_scores, axis=1)
+test_scores_mean = np.mean(test_scores, axis=1)
+test_scores_std = np.std(test_scores, axis=1)
+
 # Train the classifier:
-friends_classifier.fit(friends_vectors, friends_labels)
+# friends_classifier.fit(friends_vectors, friends_labels)
+# friends_classifier.fit(X_train, y_train)
 
 # Change prediction back to a name:
 predictions = friends_classifier.predict(mystery_vector)
+confidence = predict_proba(mystery_vector) #technically the probability.
 if predictions == [1]:
     predictions = rohan
 elif predictions == [2]:
