@@ -15,21 +15,8 @@ from nltk.stem import WordNetLemmatizer
 from collections import Counter
 from nltk.corpus import wordnet as wn
 import pickle
+import json
 # from extract_messages import messages_dict
-
-
-#needed because facebook did shitty encoding. It was supposed to be utf-8, but then got decoded into latin-1. 
-#this function undoes that and fixes the json.
-def parse_obj(obj):
-    for key in obj:
-        if isinstance(obj[key], str):
-            obj[key] = obj[key].replace('â\x80\x99', "\'") #needed to brute force convert these characters
-            obj[key] = obj[key].replace('\u00e2\u0080\u0099', "\'") #needed to brute force convert these characters
-            obj[key] = obj[key].encode('latin_1').decode('utf-8')
-        elif isinstance(obj[key], list):
-            obj[key] = list(map(lambda x: x if type(x) != str else x.encode('latin_1').decode('utf-8'), obj[key]))
-        pass
-    return obj
 
 
 #deleting linked messages from the array is going to be less efficient
@@ -50,15 +37,29 @@ def preprocess_text(text):
         continue
       cleaned = re.sub(r'\W+', ' ', message).lower()
       str = " ".join((str, cleaned))
-
-    preprocessed_text[key] = str
-  # return preprocessed_text
-
-    tokenized = word_tokenize(str) #turn a many strings to list of words
-    normalized = " ".join([normalizer.lemmatize(token, get_part_of_speech(token)) for token in tokenized])
-    preprocessed_text[key] = normalized
   print(f'Number of links: \n {num_links}')
   return preprocessed_text
+
+def preprocess_text_array_version(text):
+  preprocessed_text = {}
+  num_links = dict() #just curious to see how many links each friend sent
+  for key, array in text.items():
+    print(f'Processing {key} ...')
+    num_links[key] = 0
+    preprocessed_text[key] = []
+    for message in array:
+      if re.search(r'^https?:\/\/.*[\r\n]*', message):
+        num_links[key] = num_links[key] + 1
+        continue
+      cleaned = re.sub(r'\W+', ' ', message).lower()
+      tokenized = word_tokenize(cleaned) #turn a many strings to list of words
+      normalized = " ".join([normalizer.lemmatize(token, get_part_of_speech(token)) for token in tokenized])
+      preprocessed_text[key].append(normalized)
+
+  print(f'Number of links: \n {num_links}')
+  return preprocessed_text
+
+
 
 normalizer = WordNetLemmatizer()
 
@@ -81,16 +82,18 @@ def get_part_of_speech(word):
 #     print(type(normalized))
 #   return normalized
 
-# with open('./fb_messages.pickle', 'rb') as fb:
-#   raw_data = pickle.load(fb)
-#   preprocessed_text = preprocess_text(raw_text)
 
 with open('fb_messages.pickle', 'rb') as handle:
-    unprocessed = pickle.load(handle)
-    preprocessed_text = preprocess_text(unprocessed)
-   
+  unprocessed = pickle.load(handle)
+  # preprocessed_text = preprocess_text(unprocessed)
+  preprocessed_text = preprocess_text_array_version(unprocessed)
+
   # save it as a pickle
 with open('fb_messages_preprocessed.pickle', 'wb') as handle:
   pickle.dump(preprocessed_text, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+#save it as a json
+with open('fb_messages_preprocessed.json', 'w', encoding='utf-8') as handle:
+    json.dump(preprocessed_text, handle)
 
 # print(preprocess_text(messages_dict["Rohan Kadambi"][0:10]))
