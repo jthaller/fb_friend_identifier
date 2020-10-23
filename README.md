@@ -1,5 +1,6 @@
 # fb_friend_identifier
 Given an unseen message from a facebook friend, predict who sent it!
+<img src="https://github.com/jthaller/fb_friend_identifier/blob/master/readme_pic.jpg" width="800">
 
 ## extract_messages.py
 This script loads the JSON files from facebook chat data, then extracts the messages and creates a dict ``messages_dict``, which is imported into the next two scripts
