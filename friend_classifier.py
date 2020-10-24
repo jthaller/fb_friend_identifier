@@ -3,15 +3,14 @@
 # I used personal fb chats as training data, and I used messages from group chats as testing data
 # The only thing needed to be edited is the mystery_message string.
 
-
-# import sklearn modules here:
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, log_loss
 from sklearn.model_selection import train_test_split
 import pickle
 import json
 from preprocessing import preprocess_text, get_part_of_speech
+from sklearn.model_selection import cross_val_score
 
 # with open('fb_messages_preprocessed.pickle', 'wb') as gerkin:
 #     messages_dict = pickle.load(gerkin)
@@ -28,8 +27,6 @@ jeremy = "Jeremy Thaller"
 friends_docs = messages_dict[rohan] + messages_dict[mike] + messages_dict[thomas] + messages_dict[jeremy]
 
 # Setting up labels for the 4 friends
-# this was originally written for when messages_dict had val=[message 1, message 2,]
-# Now messages_dict has val = str of lemmatized text
 friends_labels = [1]*(len(messages_dict[rohan])) + [2]*(len(messages_dict[mike])) + [3]*(len(messages_dict[thomas])) + [4]*(len(messages_dict[jeremy]))
 
 # Create bow_vectorizer:
@@ -64,6 +61,8 @@ confidence = friends_classifier.predict_proba(mystery_vector) #technically the p
 score = friends_classifier.score(X_test, y_test)
 score1 = friends_classifier.score(X_train, y_train)
 
+# cv_score = cross_val_score(friends_classifier, friends_vectors, friends_labels, cv=5 )
+# print(cv_score)
 
 if predictions == [1]:
     predictions = rohan

@@ -1,5 +1,8 @@
 messages_html/
 messages_json/
+*.pickle
+*.json
 fb_messages.pickle
+fb_messages.json
 fb_messages_preprocessed.json
 fb_messages_preprocessed.pickle

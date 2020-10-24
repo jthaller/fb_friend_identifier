@@ -17,8 +17,7 @@ from nltk.corpus import wordnet as wn
 import pickle
 import json
 from multimethod import multimethod
-# from extract_messages import messages_dict
-
+# from nltk.corpus import stopwords #this didn't help
 
 # NO lemmatization
 #input: dict
@@ -56,7 +55,7 @@ normalizer = WordNetLemmatizer()
 @multimethod
 def preprocess_text(text: str):
     cleaned = re.sub(r'^https?:\/\/.*[\r\n]*', ' ', text)
-    cleaned = re.sub(r'\W+', ' ', cleaned).lower()
+    cleaned = re.sub(r'\W+', ' ', cleaned)
     tokenized = word_tokenize(cleaned) #turn a many strings to list of words
     normalized = " ".join([normalizer.lemmatize(token, get_part_of_speech(token)) for token in tokenized])
     return normalized
@@ -71,6 +70,7 @@ def normalize_text(text_dictionary: dict):
     normalized = " ".join([normalizer.lemmatize(token, get_part_of_speech(token)) for token in tokenized])
   return normalized
 
+
 # Input: dict like {key=name, value=[message1, message2, ...]}
 # Returns: same as input, but every words is lowered and lemmatized
 def preprocess_text_array_version(text):
@@ -84,8 +84,9 @@ def preprocess_text_array_version(text):
       if re.search(r'^https?:\/\/.*[\r\n]*', message):
         num_links[key] = num_links[key] + 1
         continue
-      cleaned = re.sub(r'\W+', ' ', message)
+      cleaned = re.sub(r'\W+', ' ', message) #gets rid of emojis. You can
       tokenized = word_tokenize(cleaned) #turn a many strings to list of words
+      # tokenized = [w for w in tokenized if not w in stop_words] #didn't really help
       normalized = " ".join([normalizer.lemmatize(token, get_part_of_speech(token)) for token in tokenized])
       preprocessed_text[key].append(normalized)
 
@@ -105,6 +106,7 @@ def get_part_of_speech(word):
 
 
 if __name__ == "__main__":
+  # stop_words = set(stopwords.words('english')) # this didn't help
   with open('fb_messages.pickle', 'rb') as handle:
     unprocessed = pickle.load(handle)
     # preprocessed_text = preprocess_text(unprocessed)
@@ -117,5 +119,3 @@ if __name__ == "__main__":
   #save it as a json
   with open('fb_messages_preprocessed.json', 'w', encoding='utf-8') as handle:
       json.dump(preprocessed_text, handle)
-
-# print(preprocess_text(messages_dict["Rohan Kadambi"][0:10]))
