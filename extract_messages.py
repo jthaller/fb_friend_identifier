@@ -93,6 +93,10 @@ with open('fb_messages.pickle', 'rb') as handle:
     print(b)
 print(messages_dict == b)
 
+#save it as a json
+with open('fb_messages.json', 'w', encoding='utf-8') as handle:
+    json.dump(messages_dict, handle)
+
 
 # print(f"Rohan: {messages_dict[rohan][-50:]}")
 print(f"Thomas: {messages_dict[thomas][-50:]}")
