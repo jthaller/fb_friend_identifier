@@ -7,11 +7,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, log_loss
 from sklearn.model_selection import train_test_split
-import pickle
+# import pickle
+from sklearn.externals import joblib
 import json
 from preprocessing import preprocess_text, get_part_of_speech
 from sklearn.model_selection import cross_val_score
 
+SAVE_MODEL = True
 # with open('fb_messages_preprocessed.pickle', 'wb') as gerkin:
 #     messages_dict = pickle.load(gerkin)
 
@@ -77,3 +79,10 @@ print(f"Training Accuracy: {score1}\n Testing Accuracy: {score}\n")
 print(f"Test message for prediction: \n \"{mystery_message}\" \n")
 print(f"Prediction: Message sent from: \n {predictions}")
 print(f"\nconfidence: \n {confidence}")
+
+# train the model on full data and save it as a joblib or pickle for later
+# loading/making predictions without having to be trained.
+if SAVE_MODEL:
+    friends_classifier.fit(friends_vectors, friends_labels)
+    with open('model.joblib', 'wb') as handle: #must be name model.joblib to work on google cloud platform
+        joblib.dump(friends_classifier)
