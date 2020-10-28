@@ -8,7 +8,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, log_loss
 from sklearn.model_selection import train_test_split
 # import pickle
-from sklearn.externals import joblib
+import joblib
 import json
 from preprocessing import preprocess_text, get_part_of_speech
 from sklearn.model_selection import cross_val_score
@@ -85,4 +85,4 @@ print(f"\nconfidence: \n {confidence}")
 if SAVE_MODEL:
     friends_classifier.fit(friends_vectors, friends_labels)
     with open('model.joblib', 'wb') as handle: #must be name model.joblib to work on google cloud platform
-        joblib.dump(friends_classifier)
+        joblib.dump(friends_classifier, 'model.joblib')
