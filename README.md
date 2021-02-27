@@ -12,7 +12,7 @@ This vectorizes and lems them. Then, the dictionary is saved as a pickle file na
 
 ## friend_classifier.py
 
-This script trains the NN with MultinomialNB, then predicts ``mystert_message`` and prints the message and the prediction.
+This script trains the classifier with MultinomialNB, then predicts ``mystery_message`` and prints the message and the prediction.
 
 ## Performance metrics
 
